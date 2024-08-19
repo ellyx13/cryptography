@@ -1,14 +1,11 @@
 import string
-import nltk
-from nltk.corpus import wordnet
+import enchant
 
-
-# Download the WordNet corpus for word validation
-nltk.download('wordnet')
 
 # Function to check if a word is valid using WordNet
 def is_valid_word(word):
-    return wordnet.synsets(word)
+    d = enchant.Dict("en_US")
+    return d.check(word)
 
 # Function to decrypt the ciphertext using a specific key
 def decrypt_with_key(ciphertext, key):
@@ -30,18 +27,18 @@ def decrypt_with_key(ciphertext, key):
 def decrypt_without_key(ciphertext):
     # Split the ciphertext into words
     words = ciphertext.split()
-    for key in range(1, 27):
+    for key in range(1, 26):
         plaintext = ""
         # Assume the key is valid until proven otherwise
         is_valid_key = True
         for word in words:
             # Decrypt each word with the current key
-            word = decrypt_with_key(word, key)
-            if not is_valid_word(word):
+            word_decrypted = decrypt_with_key(word, key)
+            if not is_valid_word(word_decrypted):
                 # If any word is invalid, this key is not correct
                 is_valid_key = False
                 break
-            plaintext += word + " "
+            plaintext += word_decrypted + " "
         if is_valid_key:
             print('Valid key:', key)
             return plaintext
