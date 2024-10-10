@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from aes import encrypt, decrypt
+from aes_encrypt import aes_encrypt
+from aes_decrypt import aes_decrypt
 
 class AESCipherApp:
     def __init__(self, root):
@@ -33,22 +34,29 @@ class AESCipherApp:
         self.decrypt_button.grid(row=0, column=1, padx=10)
 
     def btn_encrypt(self):
-        input_text = self.input_text.get("1.0", tk.END).strip()
+        plaintext = self.input_text.get("1.0", tk.END).strip()
         key_text = self.key_text.get("1.0", tk.END).strip()
-        if not input_text or not key_text:
+        if not plaintext or not key_text:
             messagebox.showerror("Lỗi", "Bạn phải nhập cả ô Input và ô Key!")
             return
+        # Kiểm tra độ dài khóa, phải đủ 16 bytes cho AES-128
+        if len(plaintext) != 16:
+            messagebox.showerror("Lỗi", "Plain text phải có độ dài chính xác 16 ký tự (128-bit).")
+            return
         self.output_text.delete("1.0", tk.END)
-        self.output_text.insert(tk.END, encrypt(input_text, key_text))
+        self.output_text.insert(tk.END, aes_encrypt(plaintext, key_text))
 
     def btn_decrypt(self):
-        input_text = self.input_text.get("1.0", tk.END).strip()
+        ciphertext = self.input_text.get("1.0", tk.END).strip()
         key_text = self.key_text.get("1.0", tk.END).strip()
-        if not input_text or not key_text:
+        if not ciphertext or not key_text:
             messagebox.showerror("Lỗi", "Bạn phải nhập cả ô Input và ô Key!")
             return
+        if len(ciphertext) != 32:
+            messagebox.showerror("Lỗi", "Ciphertext phải có độ dài chính xác 32 ký tự (128-bit).")
+            return
         self.output_text.delete("1.0", tk.END)
-        self.output_text.insert(tk.END, decrypt(input_text, key_text))
+        self.output_text.insert(tk.END, aes_decrypt(ciphertext, key_text))
 
 if __name__ == "__main__":
     root = tk.Tk()
